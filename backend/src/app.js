@@ -12,16 +12,19 @@ const sensorClient = require('./utils/sensorSimulador');
 const app = express();
 
 // Middleware
-app.use(cors()); // Habilitar CORS para Flutter [[3]]
-app.use(express.json()); // Parsear JSON [[4]]
+app.use(express.json());
+app.use(cors());
 require('dotenv').config();
 
-// Rutas (todas bajo /api)
-app.use('/api', authRoutes);
-app.use('/api/contenedores', contenedorRoutes);
-app.use('/api/alertas', alertaRoutes);
-app.use('/api/emergencias', emergenciaRoutes);
-app.use('/api/rutas', rutaRoutes);
+// Rutas
+app.use('/api', require('./routes/authRoutes')); 
+app.use('/api/contenedores', require('./routes/contenedorRoutes')); 
+app.use('/api/alertas', require('./routes/alertaRoutes')); 
+app.use('/api/rutas', require('./routes/rutaRoutes')); 
+app.use('/api/emergencias', require('./routes/emergenciaRoutes')); 
+app.use('/api/emergenciaRutas', require('./routes/emergenciaRoutes'));
+
+module.exports = app;
 
 // WebSocket para sensores (SSE)
 app.get('/api/suscribir-sensores', (req, res) => {
@@ -56,7 +59,7 @@ sequelize.sync()
 
 // Cron job para verificar alertas (cada 10 minutos)
 cron.schedule('*/10 * * * *', () => {
-  require('./controllers/alertaController').verificarAlertas(); // [[Primera Entrega.pdf]]
+  require('./controllers/alertaController').verificarAlertas();
 });
 
 // Puerto de escucha
@@ -64,5 +67,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
-
-module.exports = app;

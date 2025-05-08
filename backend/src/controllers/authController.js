@@ -18,14 +18,13 @@ exports.registro = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const usuario = await Usuario.findOne({ where: { email } });
+    const usuario = await Usuario.findOne({ where: { email: req.body.email } });
     if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
-
-    const match = await bcrypt.compare(password, usuario.contraseña);
+    
+    const match = await bcrypt.compare(req.body.contraseña, usuario.contraseña);
     if (!match) return res.status(401).json({ error: 'Contraseña incorrecta' });
-
-    const token = jwt.sign({ id: usuario.id, rol: usuario.rol }, process.env.JWT_SECRET);
+    
+    const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token, rol: usuario.rol });
   } catch (error) {
     res.status(500).json({ error: error.message });
