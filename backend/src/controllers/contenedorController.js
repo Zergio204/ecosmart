@@ -1,5 +1,14 @@
 const Contenedor = require('../models/Contenedor');
 
+exports.crearContenedor = async (req, res) => {
+  try {
+    const contenedor = await Contenedor.create(req.body);
+    res.status(201).json(contenedor); // Respuesta correcta
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.listarContenedores = async (req, res) => {
   try {
     const contenedores = await Contenedor.findAll();

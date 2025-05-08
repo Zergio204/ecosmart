@@ -1,33 +1,29 @@
 const express = require('express');
 const sequelize = require('./config/dbConfig');
+const cron = require('node-cron');
+const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const contenedorRoutes = require('./routes/contenedorRoutes');
-const cron = require('node-cron');
-const alertaController = require('./controllers/alertaController');
-const sensorClient = require('./utils/sensorSimulador');
+const alertaRoutes = require('./routes/alertaRoutes');
 const emergenciaRoutes = require('./routes/emergenciaRoutes');
+const rutaRoutes = require('./routes/rutaRoutes');
+const sensorClient = require('./utils/sensorSimulador');
 
 const app = express();
 
-app.use(express.json());
+// Middleware
+app.use(cors()); // Habilitar CORS para Flutter [[3]]
+app.use(express.json()); // Parsear JSON [[4]]
+require('dotenv').config();
 
-// Rutas
+// Rutas (todas bajo /api)
 app.use('/api', authRoutes);
 app.use('/api/contenedores', contenedorRoutes);
+app.use('/api/alertas', alertaRoutes);
+app.use('/api/emergencias', emergenciaRoutes);
+app.use('/api/rutas', rutaRoutes);
 
-// Conexión a la base de datos
-sequelize.sync()
-  .then(() => console.log('Base de datos conectada'))
-  .catch(err => console.error('Error de conexión:', err));
-
-module.exports = app;
-
-// Verificar alertas cada 10 minutos
-cron.schedule('*/10 * * * *', () => {
-  alertaController.verificarAlertas();
-});
-
-// WebSocket para actualización en tiempo real
+// WebSocket para sensores (SSE)
 app.get('/api/suscribir-sensores', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -40,10 +36,7 @@ app.get('/api/suscribir-sensores', (req, res) => {
   });
 });
 
-// Nuevas rutas
-app.use('/api', emergenciaRoutes);
-
-// WebSocket para notificaciones
+// WebSocket para notificaciones (SSE)
 app.get('/api/suscribir-notificaciones', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -55,3 +48,21 @@ app.get('/api/suscribir-notificaciones', (req, res) => {
     console.log('Cliente desconectado');
   });
 });
+
+// Sincronización con la base de datos
+sequelize.sync()
+  .then(() => console.log('Base de datos conectada'))
+  .catch(err => console.error('Error de conexión:', err));
+
+// Cron job para verificar alertas (cada 10 minutos)
+cron.schedule('*/10 * * * *', () => {
+  require('./controllers/alertaController').verificarAlertas(); // [[Primera Entrega.pdf]]
+});
+
+// Puerto de escucha
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+
+module.exports = app;
