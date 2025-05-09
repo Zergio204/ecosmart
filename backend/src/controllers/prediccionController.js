@@ -1,15 +1,15 @@
 const axios = require('axios');
+const { Contenedor } = require('../models');
 
 exports.generarPrediccion = async (req, res) => {
   try {
     const contenedor = await Contenedor.findByPk(req.params.id);
-    const historial = await contenedor.getHistorial(); // Implementar en modelo
+    if (!contenedor) return res.status(404).json({ error: 'Contenedor no encontrado' });
 
-    const response = await axios.post('http://ml-service:5000/predict', {
-      historial: historial.map(h => ({ dia: h.fecha, nivel: h.nivel }))
-    });
+    // Simular predicción (reemplazar con modelo ML)
+    const prediccion = [75, 82, 90]; // Niveles para próximos 3 días
 
-    res.json({ prediccion: response.data.prediccion });
+    res.json({ prediccion });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

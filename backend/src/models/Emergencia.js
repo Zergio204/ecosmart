@@ -9,7 +9,10 @@ const Emergencia = sequelize.define('Emergencia', {
     type: DataTypes.ENUM('pendiente', 'resuelta'),
     defaultValue: 'pendiente'
   }
-}, { timestamps: true });
+}, {
+  tableName: 'emergencias', 
+  timestamps: true
+});
 
 Emergencia.belongsTo(Contenedor, { foreignKey: 'id_contenedor' });
 Contenedor.hasMany(Emergencia, { foreignKey: 'id_contenedor' });

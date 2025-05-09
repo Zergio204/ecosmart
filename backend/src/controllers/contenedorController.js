@@ -1,9 +1,21 @@
 const Contenedor = require('../models/Contenedor');
+const geolocationService = require('../services/geolocationService');
 
 exports.crearContenedor = async (req, res) => {
   try {
-    const contenedor = await Contenedor.create(req.body);
-    res.status(201).json(contenedor); // Respuesta correcta
+    const { ubicacion, capacidad_max } = req.body;
+    
+    // Obtener coordenadas
+    const { lat, lng } = await geolocationService.getCoordinates(ubicacion);
+    
+    const contenedor = await Contenedor.create({
+      ubicacion,
+      capacidad_max,
+      lat,
+      lng
+    });
+    
+    res.status(201).json(contenedor);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -1,18 +1,29 @@
-const Ruta = require('../models/Ruta');
-const Contenedor = require('../models/Contenedor');
+const { Ruta, Contenedor } = require('../models'); // Importar desde index.js
 const { calcularRutaOptima } = require('../utils/mapboxUtils');
 
 exports.crearRuta = async (req, res) => {
   try {
-    const { id_operario, contenedores } = req.body;
-    const ruta = await Ruta.create({ 
-      id_operario,
-      fecha: new Date(),
-      distancia_km: 5.3 // Ejemplo, integrar con API de mapas
+    const { id_operario, contenedorIds } = req.body;
+    
+    // Buscar contenedores (sin lat/lng)
+    const contenedores = await Contenedor.findAll({ 
+      where: { id: contenedorIds },
+      attributes: ['id', 'ubicacion', 'capacidad_max'] // ¡Excluir lat/lng!
     });
 
-    await ruta.addContenedores(contenedores);
-    res.status(201).json({ mensaje: 'Ruta creada' });
+    // Crear ruta
+    const ruta = await Ruta.create({
+      id_operario,
+      fecha: new Date(),
+      distancia_km: 5.3,
+      duracion_min: 45,
+      estado: 'pendiente'
+    });
+
+    // Asociar contenedores (¡con el alias correcto!)
+    await ruta.addContenedores(contenedores); // ¡Corregir aquí!
+
+    res.status(201).json(ruta);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -20,30 +31,16 @@ exports.crearRuta = async (req, res) => {
 
 exports.listarRutas = async (req, res) => {
   try {
-    const rutas = await Ruta.findAll({ 
-      include: [Contenedor, { model: Usuario, as: 'operario' }]
+    const rutas = await Ruta.findAll({
+      include: [
+        { 
+          model: Contenedor, 
+          as: 'contenedores', // ¡Alias definido en Contenedor.js!
+          through: { attributes: [] } 
+        }
+      ]
     });
     res.json(rutas);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.crearRuta = async (req, res) => {
-  try {
-    const { id_operario, contenedorIds } = req.body;
-    const contenedores = await Contenedor.findAll({ where: { id: contenedorIds } });
-    
-    const rutaOptima = await calcularRutaOptima(contenedores);
-    const ruta = await Ruta.create({
-      id_operario,
-      distancia_km: rutaOptima.distance / 1000,
-      duracion_min: rutaOptima.duration / 60,
-      geometria: rutaOptima.geometry
-    });
-
-    await ruta.addContenedores(contenedores);
-    res.status(201).json(ruta);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

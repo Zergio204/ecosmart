@@ -1,5 +1,5 @@
-const Emergencia = require('../models/Emergencia');
 const { sendNotification } = require('../utils/notificationUtils');
+const { Emergencia, Contenedor } = require('../models');
 
 exports.reportarEmergencia = async (req, res) => {
   try {
@@ -7,11 +7,9 @@ exports.reportarEmergencia = async (req, res) => {
     const emergencia = await Emergencia.create({
       id_contenedor,
       descripcion,
-      imagen_url,
-      estado: 'pendiente'
+      imagen_url
     });
-    await sendNotification('EMERGENCIA_REPORTADA', { id_contenedor });
-    res.status(201).json(emergencia);
+    res.status(201).json({ mensaje: 'Emergencia reportada' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -19,9 +17,8 @@ exports.reportarEmergencia = async (req, res) => {
 
 exports.listarEmergencias = async (req, res) => {
   try {
-    const emergencias = await Emergencia.findAll({ 
-      include: Contenedor,
-      where: { estado: 'pendiente' }
+    const emergencias = await Emergencia.findAll({
+      include: [Contenedor]
     });
     res.json(emergencias);
   } catch (error) {

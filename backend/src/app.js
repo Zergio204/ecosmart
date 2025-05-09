@@ -21,8 +21,9 @@ app.use('/api', require('./routes/authRoutes'));
 app.use('/api/contenedores', require('./routes/contenedorRoutes')); 
 app.use('/api/alertas', require('./routes/alertaRoutes')); 
 app.use('/api/rutas', require('./routes/rutaRoutes')); 
-app.use('/api/emergencias', require('./routes/emergenciaRoutes')); 
-app.use('/api/emergenciaRutas', require('./routes/emergenciaRoutes'));
+app.use('/api/emergencias', require('./routes/emergenciaRoutes'));
+app.use('/api/config', require('./routes/configRoutes'));
+app.use('/api/predicciones', require('./routes/prediccionRoutes'));
 
 module.exports = app;
 

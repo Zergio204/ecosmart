@@ -12,7 +12,7 @@ app.listen(PORT, () => {
 });
 
 // Programar tareas
-cron.schedule('*/10 * * * *', () => {
+cron.schedule('*/10 * * * *', () => { 
   alertaController.verificarAlertas();
 });
 

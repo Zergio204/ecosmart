@@ -1,5 +1,5 @@
 const mqtt = require('mqtt');
-const Contenedor = require('../models/Contenedor');
+const { Contenedor } = require('../models');
 
 const client = mqtt.connect('mqtt://broker.hivemq.com');
 
@@ -10,7 +10,9 @@ client.on('connect', () => {
 
 const simularLlenado = async () => {
   try {
-    const contenedores = await Contenedor.findAll();
+    const contenedores = await Contenedor.findAll({
+      attributes: ['id', 'nivel_llenado', 'capacidad_max'] // ¡Excluir 'lat' y 'lng'!
+    });
     contenedores.forEach(async (contenedor) => {
       const nuevoNivel = Math.min(contenedor.nivel_llenado + Math.floor(Math.random() * 10), 100);
       await contenedor.update({ nivel_llenado: nuevoNivel });

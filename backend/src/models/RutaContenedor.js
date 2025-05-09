@@ -8,9 +8,10 @@ const RutaContenedor = sequelize.define('RutaContenedor', {
     type: DataTypes.ENUM('pendiente', 'recogido'),
     defaultValue: 'pendiente'
   }
-}, { timestamps: true });
+}, {
+  tableName: 'ruta_contenedor', 
+  timestamps: true
+});
 
 Ruta.belongsToMany(Contenedor, { through: RutaContenedor });
 Contenedor.belongsToMany(Ruta, { through: RutaContenedor });
-
-module.exports = RutaContenedor;

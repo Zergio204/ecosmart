@@ -9,7 +9,10 @@ const Alerta = sequelize.define('Alerta', {
     type: DataTypes.ENUM('pendiente', 'resuelta'),
     defaultValue: 'pendiente'
   }
-}, { timestamps: true });
+}, {
+  tableName: 'alertas',
+  timestamps: true
+});
 
 // Corregir la asociación: usar el modelo Contenedor (no el nombre de la tabla)
 Alerta.belongsTo(Contenedor, { foreignKey: 'id_contenedor' }); 

@@ -6,17 +6,11 @@ module.exports = {
     await queryInterface.createTable('ruta_contenedor', {
       id_ruta: {
         type: Sequelize.INTEGER,
-        references: {
-          model: 'rutas',
-          key: 'id'
-        }
+        references: { model: 'rutas', key: 'id' }
       },
       id_contenedor: {
         type: Sequelize.INTEGER,
-        references: {
-          model: 'contenedores',
-          key: 'id'
-        }
+        references: { model: 'contenedores', key: 'id' }
       },
       estado: {
         type: Sequelize.ENUM('pendiente', 'recogido'),
