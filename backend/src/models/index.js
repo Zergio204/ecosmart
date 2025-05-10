@@ -1,5 +1,6 @@
 const Contenedor = require('./Contenedor');
 const Ruta = require('./Ruta');
+const Emergencia = require('./Emergencia');
 
 // Definir asociaciones después de importar ambos modelos
 Contenedor.belongsToMany(Ruta, {
@@ -18,4 +19,4 @@ Ruta.belongsToMany(Contenedor, {
   timestamps: false
 });
 
-module.exports = { Contenedor, Ruta };
+module.exports = { Contenedor, Ruta , Emergencia};

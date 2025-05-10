@@ -1,21 +1,36 @@
-const { Contenedor } = require('../models'); // Importar modelo
+const { Contenedor } = require('../models');
 
 exports.actualizarUmbrales = async (req, res) => {
   try {
     const { umbral_critico, umbral_advertencia } = req.body;
     
-    // Validar parámetros
-    if (typeof umbral_critico !== 'number' || typeof umbral_advertencia !== 'number') {
-      return res.status(400).json({ error: 'Los umbrales deben ser números' });
-    }
-
-    // Actualizar todos los contenedores (o crear una tabla de configuración global)
+    // Actualizar todos los contenedores
     await Contenedor.update(
       { umbral_critico, umbral_advertencia },
-      { where: {} } // Aplica a todos los contenedores
+      { where: {} } // Aplica a todos
     );
 
     res.json({ mensaje: 'Umbrales actualizados' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.obtenerUmbrales = async (req, res) => {
+  try {
+    // Obtener umbrales del primer contenedor (asumiendo que todos tienen los mismos)
+    const contenedor = await Contenedor.findOne({
+      attributes: ['umbral_critico', 'umbral_advertencia']
+    });
+    
+    if (!contenedor) {
+      return res.status(404).json({ error: 'No hay contenedores registrados' });
+    }
+
+    res.json({
+      umbral_critico: contenedor.umbral_critico,
+      umbral_advertencia: contenedor.umbral_advertencia
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

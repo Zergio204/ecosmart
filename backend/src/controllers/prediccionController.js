@@ -22,3 +22,21 @@ exports.obtenerPrediccion = async (req, res) => {
   });
   res.json(prediccion);
 };
+
+exports.listarPredicciones = async (req, res) => {
+  try {
+    const contenedores = await Contenedor.findAll({
+      attributes: { exclude: ['lat', 'lng'] } // ¡Excluir hasta migrar!
+    });
+    
+    // Simular predicciones (reemplazar con ML)
+    const predicciones = contenedores.map(contenedor => ({
+      id_contenedor: contenedor.id,
+      prediccion: [75, 82, 90] // Valores simulados
+    }));
+
+    res.json(predicciones);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

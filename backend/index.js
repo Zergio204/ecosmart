@@ -16,6 +16,15 @@ cron.schedule('*/10 * * * *', () => {
   alertaController.verificarAlertas();
 });
 
-sensorClient.on('connect', () => {
-  console.log('Conectado al broker MQTT');
+app.get('/api/suscribir-sensores', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive'
+  });
+
+  sensorClient.on('connect', () => {
+    console.log('Conectado al broker MQTT');
+  });
+
 });
