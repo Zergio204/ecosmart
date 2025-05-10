@@ -16,7 +16,7 @@ class RegisterScreen extends StatelessWidget {
           children: [
             // Logo
             Image.asset(
-              '../assets/images/EcoSmart_logo.png', // Asegúrate de tener un logo adecuado
+              '../assets/images/logo.png',
               width: 100,
               height: 100,
             ),

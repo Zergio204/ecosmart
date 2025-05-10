@@ -2,6 +2,7 @@ import '../models/contenedor.dart';
 
 class Ruta {
   final int id;
+  final DateTime fecha;
   final int idOperario;
   final double distanciaKm;
   final int duracionMin;
@@ -9,6 +10,7 @@ class Ruta {
 
   Ruta({
     required this.id,
+    required this.fecha,
     required this.idOperario,
     required this.distanciaKm,
     required this.duracionMin,
@@ -18,6 +20,7 @@ class Ruta {
   factory Ruta.fromJson(Map<String, dynamic> json) {
     return Ruta(
       id: json['id'],
+      fecha: DateTime.parse(json['fecha']),
       idOperario: json['id_operario'],
       distanciaKm: json['distancia_km'],
       duracionMin: json['duracion_min'],

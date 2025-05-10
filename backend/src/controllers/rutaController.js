@@ -42,6 +42,23 @@ exports.listarRutas = async (req, res) => {
     });
     res.json(rutas);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });s
+  }
+};
+
+// Obtener los detalles de una ruta específica
+exports.getRuta = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const ruta = await Ruta.findByPk(id, {
+      include: ['contenedores'], // Incluir los contenedores asociados
+    });
+    if (!ruta) {
+      return res.status(404).json({ error: 'Ruta no encontrada' });
+    }
+    res.json(ruta);
+  } catch (error) {
+    console.error('Error al obtener la ruta:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };

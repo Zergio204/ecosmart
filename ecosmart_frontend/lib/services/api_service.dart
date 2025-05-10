@@ -5,6 +5,7 @@ import '../models/contenedor.dart';
 import '../models/alerta.dart';
 import '../models/emergencia.dart';
 import '../models/ruta.dart';
+import '../models/usuario.dart';
 
 class ApiService {
   static const String _baseUrl = 'http://localhost:3000/api';
@@ -19,19 +20,12 @@ class ApiService {
   }
 
   Future<List<Contenedor>> getContenedores() async {
-    try {
-      final token = await AuthService().getToken();
-      final response = await http.get(
-        Uri.parse('$_baseUrl/contenedores'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-      if (response.statusCode == 200) {
-        return Contenedor.fromList(json.decode(response.body));
-      } else {
-        throw Exception('Error al obtener contenedores');
-      }
-    } catch (e) {
-      throw Exception('Error de conexión: $e');
+    final response = await http.get(Uri.parse('$_baseUrl/contenedores'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => Contenedor.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al cargar contenedores');
     }
   }
 
@@ -83,6 +77,17 @@ class ApiService {
       }
     } catch (e) {
       throw Exception('Error de conexión: $e');
+    }
+  }
+
+  // Obtener los detalles de una ruta específica
+  Future<Ruta> getRuta(int id) async {
+    final response = await http.get(Uri.parse('_baseUrl/rutas/$id'));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return Ruta.fromJson(data);
+    } else {
+      throw Exception('Error al cargar la ruta con ID $id');
     }
   }
 
@@ -148,5 +153,52 @@ class ApiService {
       headers: {'Authorization': 'Bearer $token'},
     );
   }
-  
+
+  // Crear un nuevo contenedor
+  Future<void> createContenedor(Contenedor contenedor) async {
+    final response = await http.post(
+      Uri.parse('_baseUrl/contenedores'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(contenedor.toJson()),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Error al crear el contenedor: ${response.body}');
+    }
+  }
+
+  Future<void> markCollected(int contenedorId) async {
+    final response = await http.put(
+      Uri.parse('$_baseUrl/contenedores/$contenedorId/recoger'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al marcar el contenedor como recogido');
+    }
+  }
+
+  // Obtener datos del usuario
+  Future<Usuario> getUserData() async {
+    final response = await http.get(Uri.parse('$_baseUrl/usuarios/current'));
+
+    if (response.statusCode == 200) {
+      return Usuario.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Error al cargar los datos del usuario');
+    }
+  }
+
+  // Actualizar perfil del usuario
+  Future<void> updateUserProfile(String nombreUsuario, String email, String password) async {
+    final response = await http.put(
+      Uri.parse('$_baseUrl/usuarios/current'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'nombre_usuario': nombreUsuario,
+        'email': email,
+        'password': password,
+      }),
+    );
+  }
 }

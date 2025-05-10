@@ -15,7 +15,7 @@ class LoginScreen extends StatelessWidget {
 
             // Logo
             Image.asset(
-              '../assets/images/EcoSmart_logo.png', // Asegúrate de tener un logo adecuado
+              '../assets/images/logo.png', 
               width: 100,
               height: 100,
             ),
@@ -51,6 +51,7 @@ class LoginScreen extends StatelessWidget {
             TextButton(
               onPressed: () {
                 // Navegar a la pantalla de recuperación de contraseña
+                Navigator.pushNamed(context, '/reset-password');
               },
               child: Text('¿No recuerda su contraseña?'),
             ),
