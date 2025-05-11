@@ -1,16 +1,14 @@
 class Usuario {
-  final int? id; // ID opcional para cuando se recibe desde el backend
+  final int id;
   final String nombre;
   final String email;
-  final String contrasenia; // Nota: En producción, nunca almacenes contraseñas en texto plano
   final String rol;
 
   Usuario({
-    this.id,
+    required this.id,
     required this.nombre,
     required this.email,
-    required this.contrasenia,
-    this.rol = 'ciudadano', // Valor predeterminado
+    required this.rol,
   });
 
   // Factory para crear un objeto Usuario desde JSON (backend)
@@ -19,8 +17,7 @@ class Usuario {
       id: json['id'],
       nombre: json['nombre'],
       email: json['email'],
-      contrasenia: json['contraseña'], // Solo para desarrollo, no usar en producción
-      rol: json['rol'] ?? 'ciudadano',
+      rol: json['rol'],
     );
   }
 
@@ -30,7 +27,6 @@ class Usuario {
       'id': id,
       'nombre': nombre,
       'email': email,
-      'contrasenia': contrasenia, // Solo para desarrollo, no usar en producción
       'rol': rol,
     };
   }

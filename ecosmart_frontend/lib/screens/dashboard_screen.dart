@@ -1,5 +1,5 @@
 // lib/screens/dashboard_screen.dart
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../services/api_service.dart';
@@ -22,7 +22,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
-              // Lógica para menú lateral
+              // Lógica para menú lateralt
             },
           ),
         ],
@@ -36,11 +36,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No hay contenedores registrados'));
-          }
-
-          final contenedores = snapshot.data!;
+          final contenedores = snapshot.data ?? [];
 
           // Filtrar contenedores con coordenadas válidas
           final contenedoresConCoordenadas = contenedores.where((contenedor) {
@@ -50,49 +46,64 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return ListView(
             children: [
               // Mapa interactivo
-              FlutterMap(
-                options: MapOptions(
-                  initialCenter: LatLng(41.65, -4.72), // Coordenadas por defecto (Valladolid)
-                  initialZoom: 13, // Nivel de zoom inicial
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    subdomains: ['a', 'b', 'c'],
+              Container(
+                height: 300, // Fija una altura para que el mapa se vea bien
+                child: FlutterMap(
+                  options: MapOptions(
+                    initialCenter: LatLng(41.65, -4.72), // Valladolid por defecto
+                    initialZoom: 13,
                   ),
-                  MarkerLayer(
-                    markers: contenedoresConCoordenadas.map<Marker>((contenedor) {
-                      return Marker(
-                        point: LatLng(contenedor.lat!, contenedor.lng!),
-                        width: 40,
-                        height: 40,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/contenedor-detail', arguments: contenedor.id);
-                          },
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.delete,
-                                color: contenedor.nivelLlenado > 80 ? Colors.red : Colors.green,
-                                size: 40,
-                              ),
-                              Text(
-                                '${contenedor.nivelLlenado}%',
-                                style: TextStyle(
-                                  color: contenedor.nivelLlenado > 80 ? Colors.red : Colors.black,
-                                  fontWeight: FontWeight.bold,
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      subdomains: ['a', 'b', 'c'],
+                    ),
+                    MarkerLayer(
+                      markers: contenedoresConCoordenadas.map<Marker>((contenedor) {
+                        return Marker(
+                          point: LatLng(contenedor.lat!, contenedor.lng!),
+                          width: 40,
+                          height: 40,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/contenedor-detail', arguments: contenedor.id);
+                            },
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.delete,
+                                  color: contenedor.nivelLlenado > 80 ? Colors.red : Colors.green,
+                                  size: 40,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  '${contenedor.nivelLlenado}%',
+                                  style: TextStyle(
+                                    color: contenedor.nivelLlenado > 80 ? Colors.red : Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
               ),
-              // Listado de contenedores
+
+              // Mensaje debajo del mapa si no hay contenedores
+              if (contenedores.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'No hay contenedores registrados',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                ),
+
+              // Listado de contenedores (funciona aunque esté vacío)
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -115,7 +126,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 },
               ),
 
-              // Gráfico de predicciones (solo para administradores)
+              // Gráfico de predicciones (opcional para administradores)
               if (isAdministrator()) ...[
                 SizedBox(height: 16),
                 Text('Gráfico de predicciones'),
@@ -128,14 +139,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      // Redirigir a rutas programadas
+                      Navigator.pushNamed(context, '/route-planning');
                     },
                     child: Text('Rutas programadas'),
                   ),
                   SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: () {
-                      // Redirigir a configuración de umbrales
+                      Navigator.pushNamed(context, '/settings');
                     },
                     child: Text('Configurar umbrales'),
                   ),
@@ -143,7 +154,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Redirigir a página de agregar nuevo contenedor
+                  Navigator.pushNamed(context, '/create-container');
                 },
                 child: Text('Añadir nuevo contenedor'),
               ),
@@ -158,4 +169,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // Verificar si el usuario actual es administrador
     return true; // Reemplazar con lógica real
   }
-}
+}*/

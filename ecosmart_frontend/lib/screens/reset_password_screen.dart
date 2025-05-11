@@ -1,5 +1,5 @@
 // lib/screens/reset_password_screen.dart
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   @override
@@ -34,8 +34,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             // Logo
             Image.asset(
               '../assets/images/logo.png',
-              width: 100,
-              height: 100,
+              width: 200,
+              height: 200,
             ),
             SizedBox(height: 20),
 
@@ -91,4 +91,4 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       ),
     );
   }
-}
+}*/
