@@ -1,52 +1,35 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/usuario.dart';
 
 class AuthService with ChangeNotifier {
   String? _token;
-  String? _rol;
+  Usuario? _usuario;
 
   String? get token => _token;
-  String? get rol => _rol;
+  Usuario? get usuario => _usuario;
 
-  Future<void> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('http://localhost:3000/api/login'),
-      body: {'email': email, 'contraseña': password},
-    );
-    final data = json.decode(response.body);
-    _token = data['token'];
-    _rol = data['rol'];
-    notifyListeners();
-
-    // Guardar en SharedPreferences
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', _token!);
-    await prefs.setString('rol', _rol!);
-  }
-
+  // Cargar token al iniciar la app
   Future<void> loadToken() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token');
-    _rol = prefs.getString('rol');
     notifyListeners();
   }
 
-  Future<void> logout() async {
-    _token = null;
-    _rol = null;
+  // Guardar token después del login
+  Future<void> saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+    _token = token;
     notifyListeners();
+  }
 
-    // Eliminar de SharedPreferences
+  // Cerrar sesión
+  Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
-    await prefs.remove('rol');
+    _token = null;
+    notifyListeners();
   }
-
-  Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token'); // ¡Acceder al token guardado!
-  }
-  
 }

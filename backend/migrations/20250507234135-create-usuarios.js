@@ -1,36 +1,37 @@
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
+// migrations/20250511011630-create-usuarios.js
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('usuarios', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
       },
       nombre: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       email: {
         type: Sequelize.STRING,
+        unique: true,
         allowNull: false,
-        unique: true
       },
       contraseña: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       rol: {
         type: Sequelize.ENUM('admin', 'operario', 'ciudadano'),
-        defaultValue: 'ciudadano'
+        defaultValue: 'ciudadano',
       },
       createdAt: Sequelize.DATE,
-      updatedAt: Sequelize.DATE
+      updatedAt: Sequelize.DATE,
     });
   },
   down: async (queryInterface) => {
     await queryInterface.dropTable('usuarios');
-  }
+  },
 };

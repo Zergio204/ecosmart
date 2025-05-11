@@ -1,5 +1,5 @@
 // lib/screens/report_emergency_screen.dart
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // Para seleccionar imágenes
 import 'dart:io';
 
@@ -96,4 +96,4 @@ class _ReportEmergencyScreenState extends State<ReportEmergencyScreen> {
       ),
     );
   }
-}
+}*/

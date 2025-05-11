@@ -1,5 +1,5 @@
 // lib/screens/settings_screen.dart
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -234,4 +234,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-}
+}*/

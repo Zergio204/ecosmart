@@ -43,25 +43,25 @@ class EcoSmartApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
-        '/terms-of-use': (context) => TermsOfUseScreen(),
-        '/privacy-policy': (context) => PrivacyPolicyScreen(),
-        '/reset-password': (context) => ResetPasswordScreen(),
-        '/dashboard': (context) => DashboardScreen(),
-        '/routes': (context) => RoutesScreen(),
-        '/route-detail': (context) => RutaDetailScreen(
-          rutaId: ModalRoute.of(context)?.settings.arguments as int,
-        ),
-        '/create-route': (context) => CreateRouteScreen(),
-        '/create-container': (context) => CreateContainerScreen(),
-        '/container-detail': (context) => ContenedorDetailScreen(
-          contenedorId: ModalRoute.of(context)?.settings.arguments as int,
-        ),
-        '/route-planning': (context) => RoutePlanningScreen(
-          contenedores: ModalRoute.of(context)?.settings.arguments as List<Contenedor>,
-        ),
-        '/report-emergency': (context) => ReportEmergencyScreen(),
-        '/settings': (context) => SettingsScreen(),
-        '/edit-profile': (context) => EditProfileScreen(),
+        //'/terms-of-use': (context) => TermsOfUseScreen(),
+        //'/privacy-policy': (context) => PrivacyPolicyScreen(),
+        //'/reset-password': (context) => ResetPasswordScreen(),
+        //'/dashboard': (context) => DashboardScreen(),
+        //'/routes': (context) => RoutesScreen(),
+        //'/route-detail': (context) => RutaDetailScreen(
+        //  rutaId: ModalRoute.of(context)?.settings.arguments as int,
+        //),
+        //'/create-route': (context) => CreateRouteScreen(),
+        //'/create-container': (context) => CreateContainerScreen(),
+        //'/container-detail': (context) => ContenedorDetailScreen(
+        //  contenedorId: ModalRoute.of(context)?.settings.arguments as int,
+        //),
+        //'/route-planning': (context) => RoutePlanningScreen(
+        //  contenedores: ModalRoute.of(context)?.settings.arguments as List<Contenedor>,
+        //),
+        //'/report-emergency': (context) => ReportEmergencyScreen(),
+        //'/settings': (context) => SettingsScreen(),
+        //'/edit-profile': (context) => EditProfileScreen(),
       },
     );
   }
