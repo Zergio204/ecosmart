@@ -43,9 +43,9 @@ class EcoSmartApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
-        //'/terms-of-use': (context) => TermsOfUseScreen(),
-        //'/privacy-policy': (context) => PrivacyPolicyScreen(),
-        //'/reset-password': (context) => ResetPasswordScreen(),
+        '/terms-of-use': (context) => TermsOfUseScreen(),
+        '/privacy-policy': (context) => PrivacyPolicyScreen(),
+        '/reset-password': (context) => ResetPasswordScreen(),
         //'/dashboard': (context) => DashboardScreen(),
         //'/routes': (context) => RoutesScreen(),
         //'/route-detail': (context) => RutaDetailScreen(

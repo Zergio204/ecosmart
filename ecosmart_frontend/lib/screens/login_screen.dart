@@ -41,15 +41,68 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('Iniciar Sesión')),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(controller: emailController, decoration: InputDecoration(labelText: 'Email')),
-            TextField(controller: passwordController, obscureText: true, decoration: InputDecoration(labelText: 'Contraseña')),
-            SizedBox(height: 20),
+            // Logo
+            Image.asset(
+              '../assets/images/logo.png',
+              width: 150,
+              height: 150,
+            ),
+            SizedBox(height: 30),
+
+            // Campo de usuario/e-mail
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(labelText: 'E-mail'),
+            ),
+            SizedBox(height: 16),
+
+            // Campo de contraseña
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(labelText: 'Contraseña'),
+            ),
+            SizedBox(height: 24),
+
+            // Botón de inicio de sesión
             ElevatedButton(
               onPressed: () => _login(context),
-              child: _isLoading ? CircularProgressIndicator() : Text('Iniciar Sesión'),
+              child: Text('Log In'),
+            ),
+            SizedBox(height: 16),
+
+            // Enlace para crear cuenta
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, '/register'),
+              child: Text('No tienes una cuenta? Crear cuenta'),
+            ),
+            SizedBox(height: 8),
+
+            // Enlace para recuperar contraseña
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, '/reset-password'),
+              child: Text('No recuerda su contraseña?'),
+            ),
+            SizedBox(height: 16),
+
+            // Términos y Política de Privacidad
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(context, '/terms-of-use'),
+                  child: Text('Terms of Use'),
+                ),
+                Text('|'),
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(context, '/privacy-policy'),
+                  child: Text('Privacy Policy'),
+                ),
+              ],
             ),
           ],
         ),

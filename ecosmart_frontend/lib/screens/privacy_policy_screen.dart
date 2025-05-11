@@ -1,5 +1,5 @@
 // lib/screens/privacy_policy_screen.dart
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   @override
@@ -35,4 +35,4 @@ class PrivacyPolicyScreen extends StatelessWidget {
       ),
     );
   }
-}*/
+}

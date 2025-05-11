@@ -14,4 +14,8 @@ router.get('/perfil', verificarToken, (req, res) => {
   res.json({ usuario: req.usuario });
 });
 
+// Actualizar perfil del usuario
+router.post('/forgot-password', authController.sendVerificationCode);
+router.post('/reset-password', authController.resetPassword);
+
 module.exports = router;

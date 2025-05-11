@@ -1,7 +1,6 @@
 // lib/screens/register_screen.dart
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../screens/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -39,37 +38,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('Crear Cuenta')),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              '../assets/images/logo.png', // Asegúrate de que esta imagen exista
+              width: 150,
+              height: 150,
+            ),
+            SizedBox(height: 30),
             TextField(
               controller: _nombreController,
-              decoration: InputDecoration(labelText: 'Nombre'),
+              decoration: InputDecoration(labelText: 'Nombre de usuario'),
             ),
+            SizedBox(height: 16),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Correo electrónico'),
+              decoration: InputDecoration(labelText: 'E-mail'),
             ),
+            SizedBox(height: 16),
             TextField(
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(labelText: 'Contraseña'),
             ),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Rol'),
-              value: _selectedRol,
-              items: ['admin', 'operario', 'ciudadano']
-                  .map((rol) => DropdownMenuItem(value: rol, child: Text(rol)))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedRol = value ?? 'ciudadano';
-                });
-              },
-            ),
+            SizedBox(height: 24),
             ElevatedButton(
               onPressed: _registerUser,
               child: Text('Crear Cuenta'),
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(context, '/terms-of-use'),
+                  child: Text('Terms of Use'),
+                ),
+                Text('|'),
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(context, '/privacy-policy'),
+                  child: Text('Privacy Policy'),
+                ),
+              ],
             ),
           ],
         ),

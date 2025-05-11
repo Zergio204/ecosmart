@@ -1,5 +1,5 @@
 // lib/screens/terms_of_use_screen.dart
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class TermsOfUseScreen extends StatelessWidget {
   @override
@@ -34,4 +34,4 @@ class TermsOfUseScreen extends StatelessWidget {
       ),
     );
   }
-}*/
+}

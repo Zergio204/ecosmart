@@ -41,4 +41,35 @@ class ApiService {
       throw Exception('Error de autenticación: ${response.body}');
     }
   }
+
+  // Método para enviar el código de verificación
+  Future<void> sendVerificationCode(String email) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/forgot-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al enviar el código: ${response.body}');
+    }
+  }
+
+  // Método para restablecer la contraseña
+  Future<void> resetPassword(String email, String code, String newPassword) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/reset-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'email': email,
+        'code': code,
+        'newPassword': newPassword,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al restablecer la contraseña: ${response.body}');
+    }
+  }
+
 }

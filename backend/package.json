@@ -20,6 +20,7 @@
     "mqtt": "^5.0.0",
     "mysql2": "^3.14.1",
     "node-cron": "^3.0.3",
+    "nodemailer": "^7.0.3",
     "sequelize": "^6.37.7",
     "web-push": "^3.6.7"
   },

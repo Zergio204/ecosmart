@@ -1,4 +1,5 @@
 const Usuario = require('../models/Usuario');
+const VerificationCode = require('../models/VerificationCode');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -53,6 +54,54 @@ exports.login = async (req, res) => {
         rol: usuario.rol,
       },
     });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.sendVerificationCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Generar código de verificación
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Guardar el código en la base de datos
+    await VerificationCode.create({
+      email,
+      code,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutos
+    });
+
+    // Simular envío de correo electrónico
+    console.log(`Código enviado al correo ${email}: ${code}`);
+
+    res.json({ mensaje: 'Código enviado exitosamente' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+    const verificationCode = await VerificationCode.findOne({ where: { email, code } });
+
+    if (!verificationCode || verificationCode.expiresAt < new Date()) {
+      return res.status(401).json({ error: 'Código inválido o expirado' });
+    }
+
+    // Hashear la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await Usuario.update(
+      { contraseña: hashedPassword },
+      { where: { email } }
+    );
+
+    // Eliminar el código usado
+    await VerificationCode.destroy({ where: { id: verificationCode.id } });
+
+    res.json({ mensaje: 'Contraseña actualizada' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
