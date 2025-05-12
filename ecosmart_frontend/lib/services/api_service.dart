@@ -1,5 +1,6 @@
 // lib/services/api_service.dart
 import 'dart:convert';
+import 'package:ecosmart_frontend/models/ruta.dart';
 import 'package:http/http.dart' as http;
 import '../models/usuario.dart';
 import 'auth_service.dart';
@@ -200,4 +201,85 @@ class ApiService {
     }
   }
 
+ // Obtener todas las rutas
+  Future<List<Ruta>> getRutas() async {
+    try {
+      final token = await AuthService().getToken();
+      final response = await http.get(
+        Uri.parse('http://localhost:3000/api/rutas'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return Ruta.fromList(data ?? []);
+      } else {
+        throw Exception('Error al cargar las rutas');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
+  // Crear una nueva ruta
+  Future<void> crearRuta(List<int> contenedorIds, String fecha, double duracion) async {
+  try {
+    final token = await AuthService().getToken();
+    final response = await http.post(
+      Uri.parse('$_baseUrl/rutas'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'id_operario': 1, // ID del operario actual
+        'contenedorIds': contenedorIds,
+        'fecha': fecha,
+        'duracion_min': duracion.toInt(), // Convertir a entero
+      }),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Error al crear la ruta');
+    }
+  } catch (e) {
+    throw Exception('Error de conexión: $e');
+  }
+}
+
+  // Marcar contenedor como recogido
+  Future<void> markCollected(int contenedorId) async {
+    try {
+      final token = await AuthService().getToken();
+      final response = await http.put(
+        Uri.parse('$_baseUrl/contenedores/$contenedorId/recogido'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Error al marcar como recogido');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
+  Future<Ruta> getRuta(int id) async {
+    try {
+      final token = await AuthService().getToken();
+      final response = await http.get(
+        Uri.parse('http://localhost:3000/api/rutas/$id'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        return Ruta.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Error al cargar la ruta');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+  
 }

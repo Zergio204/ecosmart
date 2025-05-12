@@ -15,24 +15,21 @@ class RutaDetailScreen extends StatefulWidget {
 }
 
 class _RutaDetailScreenState extends State<RutaDetailScreen> {
+  late Future<Ruta> _futureRuta;
   final ApiService _apiService = ApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    _futureRuta = _apiService.getRuta(widget.rutaId);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Ruta ${widget.rutaId}'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              // Lógica para menú lateral
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text('Detalles de la Ruta ${widget.rutaId}')),
       body: FutureBuilder<Ruta>(
-        future: _apiService.getRuta(widget.rutaId),
+        future: _futureRuta,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -40,19 +37,13 @@ class _RutaDetailScreenState extends State<RutaDetailScreen> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          if (!snapshot.hasData) {
-            return Center(child: Text('Ruta no encontrada'));
-          }
-
           final ruta = snapshot.data!;
-
-          return ListView(
+          return Column(
             children: [
-              // Mapa interactivo
               FlutterMap(
                 options: MapOptions(
-                  initialCenter: LatLng(41.65, -4.72), // Coordenadas por defecto (Valladolid)
-                  initialZoom: 13, // Nivel de zoom inicial
+                  initialCenter: LatLng(41.65, -4.72),
+                  initialZoom: 13,
                 ),
                 children: [
                   TileLayer(
@@ -60,80 +51,37 @@ class _RutaDetailScreenState extends State<RutaDetailScreen> {
                     subdomains: ['a', 'b', 'c'],
                   ),
                   MarkerLayer(
-                    markers: ruta.contenedores.map<Marker>((contenedor) {
+                    markers: ruta.contenedores.map((contenedor) {
                       return Marker(
-                        point: LatLng(contenedor.lat!, contenedor.lng!),
+                        point: LatLng(contenedor.lat ?? 0, contenedor.lng ?? 0),
                         width: 40,
                         height: 40,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/contenedor-detail', arguments: contenedor.id);
-                          },
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.delete,
-                                color: contenedor.nivelLlenado > 80 ? Colors.red : Colors.green,
-                                size: 40,
-                              ),
-                              Text(
-                                '${contenedor.id}',
-                                style: TextStyle(
-                                  color: contenedor.nivelLlenado > 80 ? Colors.red : Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(20),
                           ),
+                          child: Center(child: Text(contenedor.id.toString())),
                         ),
                       );
                     }).toList(),
                   ),
                 ],
               ),
-
-              // Información de la ruta
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('${ruta.fecha}'),
-                        Text('${ruta.duracionMin}'),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('${ruta.distanciaKm} km'),
-                        Text('${ruta.contenedores.length} Contenedores'),
-                      ],
-                    ),
-                    SizedBox(height: 16),
-
-                    // Botones de acción
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            // Lógica para guardar cambios en la ruta
-                          },
-                          child: Text('Guardar'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context); // Volver a la pantalla anterior
-                          },
-                          child: Text('Volver'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              SizedBox(height: 16),
+              Text('Fecha: ${ruta.fecha}'),
+              Text('Distancia: ${ruta.distanciaKm} km'),
+              Text('Duración: ${ruta.duracionMin} minutos'),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // Lógica para guardar cambios
+                },
+                child: Text('Guardar'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Volver'),
               ),
             ],
           );

@@ -1,4 +1,5 @@
 // lib/screens/create_route_screen.dart
+import 'package:ecosmart_frontend/models/contenedor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -10,133 +11,116 @@ class CreateRouteScreen extends StatefulWidget {
 }
 
 class _CreateRouteScreenState extends State<CreateRouteScreen> {
-  final ApiService _apiService = ApiService();
+  final TextEditingController _fechaController = TextEditingController();
+  final TextEditingController _horaController = TextEditingController();
+  List<Contenedor> selectedContainers = [];
 
-  // Datos de la nueva ruta
-  final List<LatLng> selectedPoints = []; // Puntos seleccionados en el mapa
-  final TextEditingController dateController = TextEditingController();
-  final TextEditingController timeController = TextEditingController();
+  void _selectContainer(LatLng position) {
+  setState(() {
+    selectedContainers.add(
+      Contenedor(
+        id: 0,
+        ubicacion: 'Ubicación del contenedor',
+        capacidadMax: 1000, 
+        nivelLlenado: 0,
+        umbralCritico: 80,
+        lat: position.latitude,
+        lng: position.longitude,
+        estado: 'Pendiente',
+      ),
+    );
+  });
+}
 
-  @override
-  void dispose() {
-    dateController.dispose();
-    timeController.dispose();
-    super.dispose();
+  Future<void> _createRoute() async {
+    if (_fechaController.text.isEmpty || _horaController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor, complete todos los campos')),
+      );
+      return;
+    }
+
+    try {
+      await ApiService().crearRuta(
+        selectedContainers.map((c) => c.id).toList(),
+        _fechaController.text,
+        double.parse(_horaController.text),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ruta creada exitosamente')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Nueva Ruta'),
-      ),
-      body: ListView(
-        children: [
-          // Mapa interactivo
-          Container(
-            height: 300, // ✅ Altura definida
-            child: FlutterMap(
-              options: MapOptions(
-                initialCenter: LatLng(41.65, -4.72),
-                initialZoom: 13,
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  subdomains: ['a', 'b', 'c'],
+      appBar: AppBar(title: Text('Crear Nueva Ruta')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Container(
+              height: 300,
+              child: FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(41.65, -4.72),
+                  initialZoom: 13,
+                  onTap: (tapPosition, point) {
+                    _selectContainer(point);
+                  },
                 ),
-                MarkerLayer(
-                  markers: selectedPoints.map((point) {
-                  return Marker(
-                    point: point,
-                    width: 40,
-                    height: 40,
-                    child: GestureDetector(
-                      onTap: () {
-                        // Lógica para eliminar el marcador si es necesario
-                      },
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.delete,
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    subdomains: ['a', 'b', 'c'],
+                  ),
+                  MarkerLayer(
+                    markers: selectedContainers.map((container) {
+                      return Marker(
+                        point: LatLng(container.lat!, container.lng!),
+                        width: 40,
+                        height: 40,
+                        child: Container(
+                          decoration: BoxDecoration(
                             color: Colors.red,
-                            size: 40,
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          Text(
-                            '${selectedPoints.indexOf(point) + 1}',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
+                          child: Center(child: Text(container.id.toString())),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-
-          // Formulario de detalles de la ruta
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Text('Fecha de realización:'),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: TextField(
-                        controller: dateController,
-                        decoration: InputDecoration(
-                          hintText: 'xx/xx/xxxx',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Text('Hora de comienzo:'),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: TextField(
-                        controller: timeController,
-                        decoration: InputDecoration(
-                          hintText: 'xx:xx',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24),
-
-                // Botones de acción
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Lógica para guardar la nueva ruta
-                      },
-                      child: Text('Guardar'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context); // Volver a la pantalla anterior
-                      },
-                      child: Text('Volver'),
-                    ),
-                  ],
-                ),
-              ],
             ),
-          ),
-        ],
+            SizedBox(height: 16),
+            TextField(
+              controller: _fechaController,
+              decoration: InputDecoration(labelText: 'Fecha de realización'),
+            ),
+            SizedBox(height: 8),
+            TextField(
+              controller: _horaController,
+              decoration: InputDecoration(labelText: 'Hora de comienzo'),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _createRoute,
+              child: Text('Guardar'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Volver'),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -21,31 +21,10 @@ exports.crearContenedor = async (req, res) => {
   }
 };
 
-exports.listarContenedores = async (req, res) => {
-  try {
-    const contenedores = await Contenedor.findAll();
-    res.json(contenedores);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 exports.marcarRecogido = async (req, res) => {
   const contenedor = await Contenedor.findByPk(req.params.id);
   await contenedor.update({ nivel_llenado: 0 });
   res.json({ mensaje: 'Contenedor vaciado' });
-};
-
-exports.detalleContenedor = async (req, res) => {
-  try {
-    const contenedor = await Contenedor.findByPk(req.params.id, {
-      attributes: { exclude: ['lat', 'lng'] } // ¡Excluir hasta migrar!
-    });
-    if (!contenedor) return res.status(404).json({ error: 'Contenedor no encontrado' });
-    res.json(contenedor);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 };
 
 exports.actualizarContenedor = async (req, res) => {
@@ -73,6 +52,27 @@ exports.eliminarContenedor = async (req, res) => {
 
     await contenedor.destroy();
     res.json({ mensaje: 'Contenedor eliminado' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.detalleContenedor = async (req, res) => {
+  try {
+    const contenedor = await Contenedor.findByPk(req.params.id);
+    if (!contenedor) return res.status(404).json({ error: 'Contenedor no encontrado' });
+    res.json(contenedor);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.listarContenedores = async (req, res) => {
+  try {
+    const contenedores = await Contenedor.findAll({
+      attributes: ['id', 'ubicacion', 'capacidad_max', 'nivel_llenado', 'lat', 'lng', 'umbral_critico']
+    });
+    res.json(contenedores);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

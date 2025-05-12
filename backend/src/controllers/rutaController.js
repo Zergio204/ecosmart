@@ -1,28 +1,30 @@
-const { Ruta, Contenedor } = require('../models'); // Importar desde index.js
+const { Ruta, Contenedor } = require('../models');
 const { calcularRutaOptima } = require('../utils/mapboxUtils');
 
 exports.crearRuta = async (req, res) => {
   try {
-    const { id_operario, contenedorIds } = req.body;
-    
-    // Buscar contenedores (sin lat/lng)
-    const contenedores = await Contenedor.findAll({ 
+    const { id_operario, contenedorIds, fecha, duracion_min } = req.body;
+
+    // Validar campos obligatorios
+    if (!id_operario || !contenedorIds || !fecha || !duracion_min) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    // Buscar contenedores
+    const contenedores = await Contenedor.findAll({
       where: { id: contenedorIds },
-      attributes: ['id', 'ubicacion', 'capacidad_max'] // ¡Excluir lat/lng!
     });
 
     // Crear ruta
     const ruta = await Ruta.create({
       id_operario,
-      fecha: new Date(),
-      distancia_km: 5.3,
-      duracion_min: 45,
-      estado: 'pendiente'
+      fecha,
+      duracion_min,
+      distancia_km: 5.3, // Valor simulado
+      estado: 'pendiente',
     });
 
-    // Asociar contenedores (¡con el alias correcto!)
-    await ruta.addContenedores(contenedores); // ¡Corregir aquí!
-
+    await ruta.addContenedores(contenedores);
     res.status(201).json(ruta);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -35,30 +37,27 @@ exports.listarRutas = async (req, res) => {
       include: [
         { 
           model: Contenedor, 
-          as: 'contenedores', // ¡Alias definido en Contenedor.js!
+          as: 'contenedores',
           through: { attributes: [] } 
         }
       ]
     });
-    res.json(rutas);
+    res.json(rutas || []); // Devolver lista vacía si es null
   } catch (error) {
-    res.status(500).json({ error: error.message });s
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Obtener los detalles de una ruta específica
 exports.getRuta = async (req, res) => {
-  const { id } = req.params;
   try {
-    const ruta = await Ruta.findByPk(id, {
-      include: ['contenedores'], // Incluir los contenedores asociados
+    const ruta = await Ruta.findByPk(req.params.id, {
+      include: ['contenedores'], // Incluir contenedores asociados
     });
     if (!ruta) {
       return res.status(404).json({ error: 'Ruta no encontrada' });
     }
     res.json(ruta);
   } catch (error) {
-    console.error('Error al obtener la ruta:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).json({ error: error.message });
   }
 };

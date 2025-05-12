@@ -4,7 +4,7 @@ import '../models/contenedor.dart';
 
 class ContainerDetailScreen extends StatefulWidget {
   final int contenedorId;
-  ContainerDetailScreen({required this.contenedorId});
+   ContainerDetailScreen({required this.contenedorId});
 
   @override
   _ContainerDetailScreenState createState() => _ContainerDetailScreenState();

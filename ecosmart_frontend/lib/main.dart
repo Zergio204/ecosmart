@@ -1,6 +1,7 @@
+import 'package:ecosmart_frontend/models/contenedor.dart';
+import 'package:ecosmart_frontend/models/ruta.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ecosmart_frontend/models/emergencia.dart';
 import 'package:ecosmart_frontend/services/auth_service.dart';
 import 'package:ecosmart_frontend/screens/login_screen.dart';
 import 'package:ecosmart_frontend/screens/register_screen.dart';
@@ -13,6 +14,10 @@ import 'package:ecosmart_frontend/screens/dashboard_screen.dart';
 import 'package:ecosmart_frontend/screens/edit_profile_screen.dart';
 import 'package:ecosmart_frontend/screens/emergencias_screen.dart';
 import 'package:ecosmart_frontend/screens/report_emergency_screen.dart';
+import 'package:ecosmart_frontend/screens/ruta_detail_screen.dart';
+import 'package:ecosmart_frontend/screens/rutas_screen.dart';
+import 'package:ecosmart_frontend/screens/create_route_screen.dart';
+import 'package:ecosmart_frontend/screens/route_planning_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +55,14 @@ class EcoSmartApp extends StatelessWidget {
         '/edit-profile': (context) => EditProfileScreen(),
         '/emergencias': (context) => EmergenciasScreen(),
         '/report-emergency': (context) => ReportEmergencyScreen(),
+        '/rutas': (context) => RutasScreen(),
+        '/create-route': (context) => CreateRouteScreen(),
+        '/ruta-detail': (context) => RutaDetailScreen(
+          rutaId: ModalRoute.of(context)?.settings.arguments as int,
+        ),
+        '/route-planning': (context) => RoutePlanningScreen(
+          contenedores: ModalRoute.of(context)?.settings.arguments as List<Contenedor>,
+        ),
       },
     );
   }
