@@ -1,7 +1,9 @@
 // lib/screens/report_emergency_screen.dart
-/*import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // Para seleccionar imágenes
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'dart:io';
+import '../services/api_service.dart';
 
 class ReportEmergencyScreen extends StatefulWidget {
   @override
@@ -9,91 +11,80 @@ class ReportEmergencyScreen extends StatefulWidget {
 }
 
 class _ReportEmergencyScreenState extends State<ReportEmergencyScreen> {
-  final TextEditingController subjectController = TextEditingController();
-  XFile? selectedImage; // Almacena la imagen seleccionada
+  final _formKey = GlobalKey<FormState>();
+  final _descripcionController = TextEditingController();
+  XFile? _imagen;
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        selectedImage = pickedFile;
-      });
-    }
+    _imagen = await picker.pickImage(source: ImageSource.camera);
   }
 
-  void _submitReport() {
-    if (subjectController.text.isEmpty || selectedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor, complete todos los campos')),
-      );
-      return;
+  Future<void> _reportarEmergencia() async {
+    if (_formKey.currentState!.validate() && _imagen != null) {
+      try {
+        // Subir imagen al servidor
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('http://localhost:3000/api/emergencias'),
+        );
+
+        // Adjuntar imagen
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'imagen',
+            _imagen!.path,
+          ),
+        );
+
+        // Adjuntar otros campos
+        request.fields['id_contenedor'] = '1'; // ID del contenedor seleccionado
+        request.fields['descripcion'] = _descripcionController.text;
+
+        // Enviar solicitud
+        final response = await request.send();
+        if (response.statusCode == 201) {
+          Navigator.pop(context);
+        } else {
+          throw Exception('Error al reportar emergencia');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
     }
-
-    // Lógica para enviar el reporte al backend
-    print('Asunto del reporte: ${subjectController.text}');
-    print('Imagen seleccionada: ${selectedImage?.path}');
-
-    // Redirige a la pantalla anterior después de guardar
-    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Reportar una Emergencia'),
-      ),
+      appBar: AppBar(title: Text('Reportar Emergencia')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: subjectController,
-              decoration: InputDecoration(labelText: 'Asunto del Reporte'),
-            ),
-            SizedBox(height: 16),
-
-            // Sección para subir imagen
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: Text('Seleccionar Imagen'),
-            ),
-            SizedBox(height: 8),
-
-            // Mostrar la imagen seleccionada
-            if (selectedImage != null)
-              Image.file(
-                File(selectedImage!.path),
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
-              )
-            else
-              Text('No se ha seleccionado ninguna imagen'),
-
-            SizedBox(height: 16),
-
-            // Botones de acción
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: _submitReport,
-                  child: Text('Guardar'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Volver a la pantalla anterior
-                  },
-                  child: Text('Volver'),
-                ),
-              ],
-            ),
-          ],
+        padding: EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _descripcionController,
+                decoration: InputDecoration(labelText: 'Descripción'),
+                validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: Text('Tomar Foto'),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _reportarEmergencia,
+                child: Text('Enviar Reporte'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-}*/
+}

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../models/usuario.dart';
 import 'auth_service.dart';
 import '../models/contenedor.dart';
+import '../models/emergencia.dart';
 
 class ApiService {
   final String _baseUrl = 'http://localhost:3000/api';
@@ -181,6 +182,21 @@ class ApiService {
       );
     } catch (e) {
       throw Exception('Error al reportar emergencia');
+    }
+  }
+
+  // Obtener todas las emergencias
+  Future<List<Emergencia>> getEmergencias() async {
+    final token = await AuthService().getToken();
+    final response = await http.get(
+      Uri.parse('$_baseUrl/emergencias'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      return Emergencia.fromList(json.decode(response.body));
+    } else {
+      throw Exception('Error al obtener emergencias');
     }
   }
 

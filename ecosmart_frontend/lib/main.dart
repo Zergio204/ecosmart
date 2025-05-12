@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:ecosmart_frontend/models/emergencia.dart';
 import 'package:ecosmart_frontend/services/auth_service.dart';
 import 'package:ecosmart_frontend/screens/login_screen.dart';
 import 'package:ecosmart_frontend/screens/register_screen.dart';
@@ -11,6 +12,7 @@ import 'package:ecosmart_frontend/screens/container_detail_screen.dart';
 import 'package:ecosmart_frontend/screens/dashboard_screen.dart';
 import 'package:ecosmart_frontend/screens/edit_profile_screen.dart';
 import 'package:ecosmart_frontend/screens/emergencias_screen.dart';
+import 'package:ecosmart_frontend/screens/report_emergency_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +49,7 @@ class EcoSmartApp extends StatelessWidget {
         '/dashboard': (context) => DashboardScreen(),
         '/edit-profile': (context) => EditProfileScreen(),
         '/emergencias': (context) => EmergenciasScreen(),
+        '/report-emergency': (context) => ReportEmergencyScreen(),
       },
     );
   }
