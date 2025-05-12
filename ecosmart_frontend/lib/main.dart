@@ -10,6 +10,7 @@ import 'package:ecosmart_frontend/screens/create_container_screen.dart';
 import 'package:ecosmart_frontend/screens/container_detail_screen.dart';
 import 'package:ecosmart_frontend/screens/dashboard_screen.dart';
 import 'package:ecosmart_frontend/screens/edit_profile_screen.dart';
+import 'package:ecosmart_frontend/screens/emergencias_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +46,7 @@ class EcoSmartApp extends StatelessWidget {
         ),
         '/dashboard': (context) => DashboardScreen(),
         '/edit-profile': (context) => EditProfileScreen(),
+        '/emergencias': (context) => EmergenciasScreen(),
       },
     );
   }

@@ -164,4 +164,24 @@ class ApiService {
     }
   }
 
+  Future<void> reportarEmergencia(int contenedorId, String descripcion, String imagenUrl) async {
+    try {
+      final token = await AuthService().getToken();
+      await http.post(
+        Uri.parse('$_baseUrl/emergencias'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'id_contenedor': contenedorId,
+          'descripcion': descripcion,
+          'imagen_url': imagenUrl,
+        }),
+      );
+    } catch (e) {
+      throw Exception('Error al reportar emergencia');
+    }
+  }
+
 }

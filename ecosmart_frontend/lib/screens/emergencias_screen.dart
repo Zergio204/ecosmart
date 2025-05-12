@@ -19,13 +19,33 @@ class _EmergenciasScreenState extends State<EmergenciasScreen> {
 
   Future<void> _reportarEmergencia() async {
     if (_formKey.currentState!.validate() && _imagen != null) {
-      await ApiService().reportarEmergencia(
-        1, // ID del contenedor seleccionado
-        _descripcionController.text,
-        _imagen!.path,
-      );
-      Navigator.pop(context);
+      try {
+        // Subir la imagen al servidor (ejemplo: Firebase Storage)
+        final imageUrl = await _uploadImage(_imagen!);
+
+        // Llamar al servicio con los tres parámetros
+        await ApiService().reportarEmergencia(
+          1, // ID del contenedor seleccionado
+          _descripcionController.text,
+          imageUrl,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Emergencia reportada exitosamente')),
+        );
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al reportar emergencia: $e')),
+        );
+      }
     }
+  }
+
+  // Método simulado para subir la imagen (reemplazar con tu lógica real)
+  Future<String> _uploadImage(XFile image) async {
+    // Aquí debes implementar la subida a un servicio como Firebase Storage o AWS S3
+    return 'https://example.com/images/ ${image.name}';
   }
 
   @override
@@ -40,7 +60,7 @@ class _EmergenciasScreenState extends State<EmergenciasScreen> {
             children: [
               TextFormField(
                 controller: _descripcionController,
-                decoration: InputDecoration(labelText: 'Descripción'),
+                decoration: InputDecoration(labelText: 'Asunto del Reporte'),
                 validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
               ),
               SizedBox(height: 20),

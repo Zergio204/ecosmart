@@ -4,12 +4,20 @@ const { Emergencia, Contenedor } = require('../models');
 exports.reportarEmergencia = async (req, res) => {
   try {
     const { id_contenedor, descripcion, imagen_url } = req.body;
-    const emergencia = await Emergencia.create({
+
+    // Validar campos obligatorios
+    if (!id_contenedor || !descripcion || !imagen_url) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    // Crear la emergencia
+    const nuevaEmergencia = await Emergencia.create({
       id_contenedor,
       descripcion,
-      imagen_url
+      imagen_url,
     });
-    res.status(201).json({ mensaje: 'Emergencia reportada' });
+
+    res.status(201).json(nuevaEmergencia);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
