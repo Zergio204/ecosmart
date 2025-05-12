@@ -129,3 +129,15 @@ exports.updateUserProfile = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getCurrentUser = async (req, res) => {
+  try {
+    const usuario = await Usuario.findByPk(req.usuario.id);
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    res.json(usuario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

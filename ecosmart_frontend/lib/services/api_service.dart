@@ -124,9 +124,13 @@ class ApiService {
     }
   }
 
-  // Obtener datos del usuario actual 
+  // Obtener datos del usuario actual
   Future<Usuario> getUserData() async {
     final token = await AuthService().getToken();
+    if (token == null) {
+      throw Exception('No hay sesión iniciada');
+    }
+
     final response = await http.get(
       Uri.parse('$_baseUrl/users/current'),
       headers: {'Authorization': 'Bearer $token'},

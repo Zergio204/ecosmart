@@ -16,6 +16,8 @@ router.get('/perfil', verificarToken, (req, res) => {
 
 router.put('/users/update', authController.updateUserProfile);
 
+router.get('/users/current', authController.getCurrentUser);
+
 // Actualizar perfil del usuario
 router.post('/forgot-password', authController.sendVerificationCode);
 router.post('/reset-password', authController.resetPassword);
