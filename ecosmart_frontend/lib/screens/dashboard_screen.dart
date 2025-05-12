@@ -1,9 +1,9 @@
-// lib/screens/dashboard_screen.dart
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../services/api_service.dart';
 import '../models/contenedor.dart';
+
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -12,55 +12,55 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final ApiService _apiService = ApiService();
+  List<Contenedor> contenedores = [];
+  bool isAdmin = false; // Variable para mostrar opciones de administrador
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchContenedores();
+  }
+
+  Future<void> _fetchContenedores() async {
+    try {
+      final data = await _apiService.getContenedores();
+      setState(() {
+        contenedores = data;
+        // Verificar si el usuario es administrador (ejemplo)
+        isAdmin = true; // Reemplazar con lógica real
+      });
+    } catch (e) {
+      print('Error al cargar contenedores: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('EcoSmart'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              // Lógica para menú lateralt
-            },
-          ),
-        ],
-      ),
-      body: FutureBuilder<List<Contenedor>>(
-        future: _apiService.getContenedores(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          final contenedores = snapshot.data ?? [];
+      appBar: AppBar(title: Text('EcoSmart')),
+      body: Column(
+        children: [
+          // Mapa con marcadores
+          Expanded(
+            child: FlutterMap(
+              options: MapOptions(
+                initialCenter: LatLng(41.65, -4.72),
+                initialZoom: 13,
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  subdomains: ['a', 'b', 'c'],
+                ),
+                MarkerLayer(
+                  markers: contenedores.map((contenedor) {
+                    final color = contenedor.nivelLlenado > 80
+                        ? Colors.red
+                        : contenedor.nivelLlenado > 50
+                            ? Colors.orange
+                            : Colors.green;
 
-          // Filtrar contenedores con coordenadas válidas
-          final contenedoresConCoordenadas = contenedores.where((contenedor) {
-            return contenedor.lat != null && contenedor.lng != null;
-          }).toList();
-
-          return ListView(
-            children: [
-              // Mapa interactivo
-              Container(
-                height: 300, // Fija una altura para que el mapa se vea bien
-                child: FlutterMap(
-                  options: MapOptions(
-                    initialCenter: LatLng(41.65, -4.72), // Valladolid por defecto
-                    initialZoom: 13,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: ['a', 'b', 'c'],
-                    ),
-                    MarkerLayer(
-                      markers: contenedoresConCoordenadas.map<Marker>((contenedor) {
-                        return Marker(
+                    return Marker(
                           point: LatLng(contenedor.lat!, contenedor.lng!),
                           width: 40,
                           height: 40,
@@ -87,86 +87,74 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         );
                       }).toList(),
-                    ),
+                    ),  
                   ],
                 ),
               ),
+          SizedBox(height: 16),
+          // Lista de contenedores
+          Expanded(
+            child: ListView.builder(
+              itemCount: contenedores.length,
+              itemBuilder: (context, index) {
+                final contenedor = contenedores[index];
+                final estadoColor = contenedor.estado == 'Recogido'
+                    ? Colors.green
+                    : Colors.yellow;
 
-              // Mensaje debajo del mapa si no hay contenedores
-              if (contenedores.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'No hay contenedores registrados',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
-                  ),
-                ),
-
-              // Listado de contenedores (funciona aunque esté vacío)
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: contenedores.length,
-                itemBuilder: (context, index) {
-                  final contenedor = contenedores[index];
-                  return Card(
-                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: ListTile(
-                      title: Text('Contenedor ${contenedor.id}'),
-                      subtitle: Text(contenedor.ubicacion ?? 'Ubicación no disponible'),
-                      trailing: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/contenedor-detail', arguments: contenedor.id);
-                        },
-                        child: Text('Ver detalles'),
+                return Card(
+                  child: ListTile(
+                    title: Text('Contenedor ${contenedor.id}'),
+                    subtitle: Text(contenedor.ubicacion ?? 'Ubicación no disponible'),
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/container-detail',
+                          arguments: contenedor.id,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: estadoColor,
                       ),
+                      child: Text('Ver detalles'),
                     ),
-                  );
-                },
-              ),
-
-              // Gráfico de predicciones (opcional para administradores)
-              if (isAdministrator()) ...[
-                SizedBox(height: 16),
+                  ),
+                );
+              },
+            ),
+          ),
+          SizedBox(height: 16),
+          // Gráfico de predicciones (solo para admins)
+          if (isAdmin)
+            Column(
+              children: [
                 Text('Gráfico de predicciones'),
-                // Aquí puedes agregar el gráfico usando un widget como charts_flutter
+                // Aquí puedes agregar un widget como charts_flutter
               ],
-
-              // Opciones adicionales
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/route-planning');
-                    },
-                    child: Text('Rutas programadas'),
-                  ),
-                  SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/settings');
-                    },
-                    child: Text('Configurar umbrales'),
-                  ),
-                ],
+            ),
+          SizedBox(height: 16),
+          // Botones de acción
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () => Navigator.pushNamed(context, '/rutas'),
+                child: Text('Rutas programadas'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/create-container');
-                },
-                child: Text('Añadir nuevo contenedor'),
+                onPressed: () => Navigator.pushNamed(context, '/configurar-umbrales'),
+                child: Text('Configurar umbrales'),
               ),
             ],
-          );
-        },
+          ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => Navigator.pushNamed(context, '/create-container'),
+            child: Text('Añadir nuevo contenedor'),
+          ),
+        ],
       ),
     );
   }
-
-  bool isAdministrator() {
-    // Verificar si el usuario actual es administrador
-    return true; // Reemplazar con lógica real
-  }
-}*/
+}

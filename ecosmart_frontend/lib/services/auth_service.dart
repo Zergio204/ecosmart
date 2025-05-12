@@ -32,4 +32,11 @@ class AuthService with ChangeNotifier {
     _token = null;
     notifyListeners();
   }
+
+  // Método para obtener el token desde SharedPreferences
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+  
 }

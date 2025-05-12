@@ -3,24 +3,29 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/usuario.dart';
 import 'auth_service.dart';
+import '../models/contenedor.dart';
 
 class ApiService {
   final String _baseUrl = 'http://localhost:3000/api';
 
   // Registro de usuario
-  Future<void> register(String nombre, String email, String password, String rol) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/register'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'nombre': nombre, 
-        'email': email,
-        'contraseña': password,
-      }),
-    );
+  Future<void> register(String nombre, String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'nombre': nombre,
+          'email': email,
+          'contraseña': password,
+        }),
+      );
 
-    if (response.statusCode != 201) {
-      throw Exception('Error al registrar usuario: ${response.body}');
+      if (response.statusCode != 201) {
+        throw Exception('Error al registrar usuario: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
     }
   }
 
@@ -69,6 +74,89 @@ class ApiService {
 
     if (response.statusCode != 200) {
       throw Exception('Error al restablecer la contraseña: ${response.body}');
+    }
+  }
+
+  // Crear un nuevo contenedor
+  Future<void> createContenedor(Contenedor contenedor) async {
+    try {
+      final token = await AuthService().getToken(); // Obtener token de autenticación
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/contenedores'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token', // Si el endpoint está protegido
+        },
+        body: json.encode(contenedor.toJson()),
+      );
+
+      if (response.statusCode != 201) {
+        throw Exception('Error al crear el contenedor: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
+  // Obtener detalles de un contenedor
+  Future<Contenedor> getContenedor(int id) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/contenedores/$id'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return Contenedor.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Error al obtener los detalles del contenedor');
+    }
+  }
+
+  // Obtener todos los contenedores
+  Future<List<Contenedor>> getContenedores() async {
+    final response = await http.get(Uri.parse('$_baseUrl/contenedores'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body) as List;
+      return data.map((json) => Contenedor.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al obtener los contenedores');
+    }
+  }
+
+  // Obtener datos del usuario actual 
+  Future<Usuario> getUserData() async {
+    final token = await AuthService().getToken();
+    final response = await http.get(
+      Uri.parse('$_baseUrl/users/current'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      return Usuario.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Error al obtener los datos del usuario');
+    }
+  }
+
+  // Actualizar perfil de usuario
+  Future<void> updateUserProfile(String nombre, String email, String password) async {
+    final token = await AuthService().getToken();
+    final response = await http.put(
+      Uri.parse('$_baseUrl/users/update'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'nombre': nombre,
+        'email': email,
+        'contraseña': password,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al actualizar el perfil');
     }
   }
 

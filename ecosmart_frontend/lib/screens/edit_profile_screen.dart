@@ -1,5 +1,4 @@
-// lib/screens/edit_profile_screen.dart
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -18,7 +17,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Cargar los datos del usuario actual (ejemplo)
     _fetchUserData();
   }
 
@@ -71,42 +69,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Editar Perfil'),
-      ),
+      appBar: AppBar(title: Text('Editar Perfil')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage('https://via.placeholder.com/150 '), // Imagen de perfil
+              backgroundImage: AssetImage('assets/images/profile_placeholder.png'), // Usar un asset local
             ),
             SizedBox(height: 16),
 
-            // Campo de nombre de usuario
             TextField(
               controller: nombreUsuarioController,
               decoration: InputDecoration(labelText: 'Nombre de usuario'),
             ),
             SizedBox(height: 16),
 
-            // Campo de e-mail
             TextField(
               controller: emailController,
               decoration: InputDecoration(labelText: 'Correo Electrónico'),
             ),
             SizedBox(height: 16),
 
-            // Campo de contraseña
             TextField(
               controller: passwordController,
-              obscureText: true, // Ocultar texto de la contraseña
+              obscureText: true,
               decoration: InputDecoration(labelText: 'Contraseña'),
             ),
             SizedBox(height: 16),
 
-            // Botón Guardar
             ElevatedButton(
               onPressed: _saveChanges,
               child: Text('Guardar Información'),
@@ -116,4 +108,4 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
-}*/
+}

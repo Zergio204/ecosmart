@@ -1,4 +1,3 @@
-// lib/screens/register_screen.dart
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
@@ -11,21 +10,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String _selectedRol = 'ciudadano'; // Rol por defecto
 
   void _registerUser() async {
     try {
-      // Obtener valores de los campos
       final nombre = _nombreController.text;
       final email = _emailController.text;
       final password = _passwordController.text;
-      final rol = _selectedRol;
 
-      // Llamar al servicio de registro
-      await ApiService().register(nombre, email, password, rol);
+      await ApiService().register(nombre, email, password);
 
-      // Redirigir al login
-      Navigator.pushReplacementNamed(context, '/login');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Cuenta creada exitosamente')),
+      );
+      Navigator.pop(context); // Volver a la pantalla anterior
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
@@ -40,14 +37,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              '../assets/images/logo.png', // Asegúrate de que esta imagen exista
-              width: 150,
-              height: 150,
+              '../assets/images/logo.png',
+              width: 200,
+              height: 200,
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 20),
             TextField(
               controller: _nombreController,
               decoration: InputDecoration(labelText: 'Nombre de usuario'),
@@ -55,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             SizedBox(height: 16),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'E-mail'),
+              decoration: InputDecoration(labelText: 'Email'),
             ),
             SizedBox(height: 16),
             TextField(

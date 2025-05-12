@@ -106,3 +106,26 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const { nombre, email, contraseña } = req.body;
+    const usuario = await Usuario.findByPk(req.usuario.id);
+
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Actualizar campos
+    usuario.nombre = nombre || usuario.nombre;
+    usuario.email = email || usuario.email;
+    if (contraseña) {
+      usuario.contraseña = await bcrypt.hash(contraseña, 10);
+    }
+
+    await usuario.save();
+    res.json(usuario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
