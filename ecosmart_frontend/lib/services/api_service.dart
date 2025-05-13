@@ -265,22 +265,23 @@ class ApiService {
   }
 
   Future<Ruta> getRuta(int id) async {
-    try {
-      final token = await AuthService().getToken();
-      final response = await http.get(
-        Uri.parse('http://localhost:3000/api/rutas/$id'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
+  try {
+    final token = await AuthService().getToken();
+    final response = await http.get(
+      Uri.parse('http://localhost:3000/api/rutas/$id'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-      if (response.statusCode == 200) {
-        return Ruta.fromJson(json.decode(response.body));
-      } else {
-        throw Exception('Error al cargar la ruta');
-      }
-    } catch (e) {
-      throw Exception('Error de conexión: $e');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return Ruta.fromJson(data); // ¡Verificar estructura!
+    } else {
+      throw Exception('Error al cargar la ruta');
     }
+  } catch (e) {
+    throw Exception('Error de conexión: $e');
   }
+}
 
   Future<void> eliminarRuta(int id) async {
     try {

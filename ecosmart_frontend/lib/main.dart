@@ -1,5 +1,4 @@
 import 'package:ecosmart_frontend/models/contenedor.dart';
-import 'package:ecosmart_frontend/models/ruta.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ecosmart_frontend/services/auth_service.dart';

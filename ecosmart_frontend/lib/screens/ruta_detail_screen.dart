@@ -15,12 +15,11 @@ class RutaDetailScreen extends StatefulWidget { // ¡Clase correctamente definid
 
 class _RutaDetailScreenState extends State<RutaDetailScreen> {
   late Future<Ruta> _futureRuta;
-  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
-    _futureRuta = _apiService.getRuta(widget.rutaId);
+    _futureRuta = ApiService().getRuta(widget.rutaId);
   }
 
   @override
@@ -36,12 +35,19 @@ class _RutaDetailScreenState extends State<RutaDetailScreen> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
+          if (!snapshot.hasData || snapshot.data!.contenedores.isEmpty) {
+            return Center(child: Text('No hay datos disponibles'));
+          }
           final ruta = snapshot.data!;
           return Column(
             children: [
+              // Mapa con marcadores
               FlutterMap(
                 options: MapOptions(
-                  initialCenter: LatLng(41.65, -4.72),
+                  initialCenter: LatLng(
+                    ruta.contenedores.first.lat ?? 41.65,
+                    ruta.contenedores.first.lng ?? -4.72,
+                  ),
                   initialZoom: 13,
                 ),
                 children: [
@@ -67,21 +73,7 @@ class _RutaDetailScreenState extends State<RutaDetailScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
-              Text('Fecha: ${ruta.fecha}'),
-              Text('Distancia: ${ruta.distanciaKm} km'),
-              Text('Duración: ${ruta.duracionMin} minutos'),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  // Lógica para guardar cambios
-                },
-                child: Text('Guardar'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Volver'),
-              ),
+              // ... resto de la UI ...
             ],
           );
         },

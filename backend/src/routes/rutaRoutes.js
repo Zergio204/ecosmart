@@ -6,5 +6,6 @@ const rutaController = require('../controllers/rutaController');
 router.post('/', rutaController.crearRuta); // Crear ruta óptima
 router.get('/', rutaController.listarRutas); // Listar rutas
 router.delete('/:id', rutaController.eliminarRuta);
+router.get('/:id', rutaController.getRuta);
 
 module.exports = router;

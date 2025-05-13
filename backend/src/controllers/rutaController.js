@@ -51,7 +51,13 @@ exports.listarRutas = async (req, res) => {
 exports.getRuta = async (req, res) => {
   try {
     const ruta = await Ruta.findByPk(req.params.id, {
-      include: ['contenedores'], // Incluir contenedores asociados
+      include: [
+        {
+          model: Contenedor,
+          as: 'contenedores',
+          attributes: ['id', 'ubicacion', 'lat', 'lng'], // ¡Incluir coordenadas!
+        },
+      ],
     });
     if (!ruta) {
       return res.status(404).json({ error: 'Ruta no encontrada' });

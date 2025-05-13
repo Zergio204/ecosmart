@@ -55,8 +55,8 @@ class _ContainerDetailScreenState extends State<ContainerDetailScreen> {
 
                 // Botones
                 ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/configurar-umbrales'),
-                  child: Text('Configurar Umbrales'),
+                  onPressed: () => Navigator.pushNamed(context, '/settings'),
+                  child: Text('Ajustes'),
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pushNamed(context, '/emergencias'),
