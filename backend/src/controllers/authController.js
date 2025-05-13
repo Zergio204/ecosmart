@@ -141,3 +141,11 @@ exports.getCurrentUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.verificarRolAdmin = async (req, res, next) => {
+  const usuario = req.usuario;
+  if (usuario.rol !== 'admin') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+  next();
+};

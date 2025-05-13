@@ -18,6 +18,7 @@ import 'package:ecosmart_frontend/screens/ruta_detail_screen.dart';
 import 'package:ecosmart_frontend/screens/rutas_screen.dart';
 import 'package:ecosmart_frontend/screens/create_route_screen.dart';
 import 'package:ecosmart_frontend/screens/route_planning_screen.dart';
+import 'package:ecosmart_frontend/screens/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,6 +64,7 @@ class EcoSmartApp extends StatelessWidget {
         '/route-planning': (context) => RoutePlanningScreen(
           contenedores: ModalRoute.of(context)?.settings.arguments as List<Contenedor>,
         ),
+        '/settings': (context) => SettingsScreen(),
       },
     );
   }

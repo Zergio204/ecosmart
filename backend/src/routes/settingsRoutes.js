@@ -1,0 +1,1 @@
+router.post('/export-data', authController.verificarRolAdmin, settingsController.exportarDatos);

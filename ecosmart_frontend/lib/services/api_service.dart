@@ -281,5 +281,39 @@ class ApiService {
       throw Exception('Error de conexión: $e');
     }
   }
+
+  Future<void> eliminarRuta(int id) async {
+    try {
+      final token = await AuthService().getToken();
+      final response = await http.delete(
+        Uri.parse('http://localhost:3000/api/rutas/$id'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Error al eliminar la ruta');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
+  Future<String> exportarDatos() async {
+    try {
+      final token = await AuthService().getToken();
+      final response = await http.get(
+        Uri.parse('http://localhost:3000/api/export-data'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        return response.body; // Devuelve los datos en formato CSV/JSON
+      } else {
+        throw Exception('Error al exportar datos');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
   
 }

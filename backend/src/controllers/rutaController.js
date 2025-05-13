@@ -61,3 +61,17 @@ exports.getRuta = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.eliminarRuta = async (req, res) => {
+  try {
+    const ruta = await Ruta.findByPk(req.params.id);
+    if (!ruta) {
+      return res.status(404).json({ error: 'Ruta no encontrada' });
+    }
+
+    await ruta.destroy();
+    res.json({ mensaje: 'Ruta eliminada' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

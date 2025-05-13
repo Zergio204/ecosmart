@@ -1,5 +1,8 @@
 // lib/screens/settings_screen.dart
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import '../services/api_service.dart';
+import '../services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -7,26 +10,38 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-
-  // Estado inicial de las preferencias
   bool globalNotificationsEnabled = true;
   bool criticalAlertsEnabled = true;
   bool moderateAlertsEnabled = true;
   bool predictionNotificationsEnabled = true;
 
-  double criticalThreshold = 80.0; // Umbral de alertas críticas
-  double moderateThreshold = 50.0; // Umbral de alertas moderadas
+  double criticalThreshold = 80.0;
+  double moderateThreshold = 50.0;
 
-  String themeMode = 'Claro'; // Tema de la app
-  String distanceUnit = 'Km'; // Unidad de distancia
-  bool showGraphs = true; // Gráficos en el dashboard
+  String themeMode = 'Claro';
+  String distanceUnit = 'Km';
+  bool showGraphs = true;
+
+  // Verificar si el usuario es administrador
+  bool isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Cargar preferencias del usuario desde el backend
+    // Ejemplo:
+    // ApiService().getUserPreferences().then((prefs) {
+    //   setState(() {
+    //     globalNotificationsEnabled = prefs.globalNotifications;
+    //     // ... otros campos ...
+    //   });
+    // });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Configuración'),
-      ),
+      appBar: AppBar(title: Text('Configuración')),
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
@@ -38,6 +53,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() {
                 globalNotificationsEnabled = value;
               });
+              // Guardar en backend
+              // ApiService().updateUserPreferences(...);
             },
           ),
 
@@ -49,6 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() {
                 criticalAlertsEnabled = value;
               });
+              // Guardar en backend
             },
           ),
 
@@ -60,6 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() {
                 moderateAlertsEnabled = value;
               });
+              // Guardar en backend
             },
           ),
 
@@ -71,167 +90,171 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() {
                 predictionNotificationsEnabled = value;
               });
+              // Guardar en backend
             },
           ),
 
-          // Ajuste de Umbrales de Alerta
-          Text('Ajuste de umbrales de alerta'),
-          SizedBox(height: 16),
+          Divider(),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Ajuste de Umbrales
+          Text('Ajuste de umbrales de alerta', style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
+
+          // Slider Alertas Críticas
+          Column(
             children: [
-              Text('Alertas Críticas'),
-              Text('${criticalThreshold.toStringAsFixed(0)} %'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Alertas Críticas'),
+                  Text('${criticalThreshold.round()} %'),
+                ],
+              ),
+              Slider(
+                value: criticalThreshold,
+                min: 0,
+                max: 100,
+                divisions: 100,
+                label: '${criticalThreshold.round()}%',
+                onChanged: (value) {
+                  setState(() {
+                    criticalThreshold = value;
+                  });
+                  // Guardar en backend
+                },
+              ),
             ],
           ),
-          Slider(
-            value: criticalThreshold,
-            min: 0,
-            max: 100,
-            onChanged: (value) {
-              setState(() {
-                criticalThreshold = value;
-              });
-            },
-          ),
-          SizedBox(height: 16),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Slider Alertas Moderadas
+          Column(
             children: [
-              Text('Alertas Moderadas'),
-              Text('${moderateThreshold.toStringAsFixed(0)} %'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Alertas Moderadas'),
+                  Text('${moderateThreshold.round()} %'),
+                ],
+              ),
+              Slider(
+                value: moderateThreshold,
+                min: 0,
+                max: 100,
+                divisions: 100,
+                label: '${moderateThreshold.round()}%',
+                onChanged: (value) {
+                  setState(() {
+                    moderateThreshold = value;
+                  });
+                  // Guardar en backend
+                },
+              ),
             ],
           ),
-          Slider(
-            value: moderateThreshold,
-            min: 0,
-            max: 100,
-            onChanged: (value) {
-              setState(() {
-                moderateThreshold = value;
-              });
-            },
-          ),
+
+          Divider(),
 
           // Preferencias de Datos
-          Text('Preferencias de datos'),
-          SizedBox(height: 16),
+          Text('Preferencias de datos', style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
 
-          Row(
-            children: [
-              Text('Color de la App:'),
-              RadioListTile<String>(
-                title: Text('Oscuro'),
-                value: 'Oscuro',
-                groupValue: themeMode,
-                onChanged: (value) {
-                  setState(() {
-                    themeMode = value!;
-                  });
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('Claro'),
-                value: 'Claro',
-                groupValue: themeMode,
-                onChanged: (value) {
-                  setState(() {
-                    themeMode = value!;
-                  });
-                },
-              ),
-            ],
+          // Tema de la App
+          ListTile(
+            title: Text('Color de la App'),
+            trailing: ToggleButtons(
+              children: [Text('Oscuro'), Text('Claro')],
+              isSelected: [themeMode == 'Oscuro', themeMode == 'Claro'],
+              onPressed: (index) {
+                setState(() {
+                  themeMode = index == 0 ? 'Oscuro' : 'Claro';
+                });
+                // Guardar en backend
+              },
+            ),
           ),
 
-          Row(
-            children: [
-              Text('Unidad de distancia:'),
-              RadioListTile<String>(
-                title: Text('Km'),
-                value: 'Km',
-                groupValue: distanceUnit,
-                onChanged: (value) {
-                  setState(() {
-                    distanceUnit = value!;
-                  });
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('Miles'),
-                value: 'Miles',
-                groupValue: distanceUnit,
-                onChanged: (value) {
-                  setState(() {
-                    distanceUnit = value!;
-                  });
-                },
-              ),
-            ],
+          // Unidad de Distancia
+          ListTile(
+            title: Text('Unidad de distancia'),
+            trailing: ToggleButtons(
+              children: [Text('Km'), Text('Miles')],
+              isSelected: [distanceUnit == 'Km', distanceUnit == 'Miles'],
+              onPressed: (index) {
+                setState(() {
+                  distanceUnit = index == 0 ? 'Km' : 'Miles';
+                });
+                // Guardar en backend
+              },
+            ),
           ),
 
-          Row(
-            children: [
-              Text('Gráficos en el dashboard:'),
-              RadioListTile<bool>(
-                title: Text('Mostrar'),
-                value: true,
-                groupValue: showGraphs,
-                onChanged: (value) {
-                  setState(() {
-                    showGraphs = value!;
-                  });
-                },
-              ),
-              RadioListTile<bool>(
-                title: Text('Ocultar'),
-                value: false,
-                groupValue: showGraphs,
-                onChanged: (value) {
-                  setState(() {
-                    showGraphs = value!;
-                  });
-                },
-              ),
-            ],
+          // Mostrar/Ocultar Gráficos
+          ListTile(
+            title: Text('Gráficos en el dashboard'),
+            trailing: ToggleButtons(
+              children: [Text('Mostrar'), Text('Ocultar')],
+              isSelected: [showGraphs, !showGraphs],
+              onPressed: (index) {
+                setState(() {
+                  showGraphs = index == 0;
+                });
+                // Guardar en backend
+              },
+            ),
           ),
+
+          Divider(),
 
           // Configuración de Cuenta
-          Text('Configuración de cuenta'),
-          SizedBox(height: 16),
+          Text('Configuración de cuenta', style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
 
           ElevatedButton(
             onPressed: () {
-              // Lógica para editar perfil
+              Navigator.pushNamed(context, '/edit-profile');
             },
             child: Text('Editar Perfil'),
           ),
+          SizedBox(height: 8),
           ElevatedButton(
-            onPressed: () {
-              // Lógica para cerrar sesión
+            onPressed: () async {
+              final authService = Provider.of<AuthService>(context, listen: false);
+              await authService.logout();
+              Navigator.pushReplacementNamed(context, '/login');
             },
             child: Text('Cerrar Sesión'),
           ),
 
-          // Opciones Avanzadas
-          Text('Opciones avanzadas'),
-          SizedBox(height: 16),
+          Divider(),
 
-          ElevatedButton(
-            onPressed: () {
-              // Redirige a la pantalla de añadir contenedor
-            },
-            child: Text('Añadir Nuevo Contenedor'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Lógica para exportar datos
-            },
-            child: Text('Exportar Datos'),
-          ),
+          // Opciones Avanzadas (Solo para Admin)
+          if (isAdmin) ...[
+            Text('Opciones avanzadas', style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/add-container');
+              },
+              child: Text('Añadir Nuevo Contenedor'),
+            ),
+            SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final data = await ApiService().exportarDatos();
+                  // Descargar archivo CSV/Excel
+                  // Ejemplo:
+                  // final bytes = utf8.encode(data);
+                  // await FileSaver.instance.saveFile('datos.csv', bytes, 'text/csv');
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              },
+              child: Text('Exportar Datos'),
+            ),
+          ],
         ],
       ),
     );
   }
-}*/
+}

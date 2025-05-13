@@ -125,15 +125,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
           SizedBox(height: 16),
-          // Gráfico de predicciones (solo para admins)
-          if (isAdmin)
-            Column(
-              children: [
-                Text('Gráfico de predicciones'),
-                // Aquí puedes agregar un widget como charts_flutter
-              ],
-            ),
-          SizedBox(height: 16),
+          
           // Botones de acción
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -143,8 +135,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Text('Rutas programadas'),
               ),
               ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/configurar-umbrales'),
-                child: Text('Configurar umbrales'),
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+                child: Text('Ajustes'),
               ),
             ],
           ),

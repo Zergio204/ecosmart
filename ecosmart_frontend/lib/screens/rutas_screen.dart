@@ -79,8 +79,20 @@ class _RutasScreenState extends State<RutasScreen> {
                               ),
                               SizedBox(width: 8),
                               ElevatedButton(
-                                onPressed: () {
-                                  // Lógica para eliminar ruta
+                                onPressed: () async {
+                                  try {
+                                    await ApiService().eliminarRuta(ruta.id);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Ruta eliminada')),
+                                    );
+                                    setState(() {
+                                      rutas.remove(ruta); // Actualizar la lista
+                                    });
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Error: $e')),
+                                    );
+                                  }
                                 },
                                 child: Text('Eliminar Ruta'),
                               ),

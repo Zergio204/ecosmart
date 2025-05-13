@@ -5,10 +5,9 @@ import 'package:latlong2/latlong.dart';
 import '../services/api_service.dart';
 import '../models/ruta.dart';
 
-class RutaDetailScreen extends StatefulWidget {
+class RutaDetailScreen extends StatefulWidget { // ¡Clase correctamente definida!
   final int rutaId;
-
-  RutaDetailScreen({required this.rutaId});
+  const RutaDetailScreen({required this.rutaId});
 
   @override
   _RutaDetailScreenState createState() => _RutaDetailScreenState();

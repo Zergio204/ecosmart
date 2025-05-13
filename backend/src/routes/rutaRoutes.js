@@ -5,5 +5,6 @@ const rutaController = require('../controllers/rutaController');
 // Rutas para gestión de rutas de recogida
 router.post('/', rutaController.crearRuta); // Crear ruta óptima
 router.get('/', rutaController.listarRutas); // Listar rutas
+router.delete('/:id', rutaController.eliminarRuta);
 
 module.exports = router;
